@@ -29,15 +29,18 @@ class Vulnerability:
         self.severity = severity
         self.references = references
 
-
     def __attrs(self):
-        return (self.title, self.severity, json.dumps(self.references, indent=1))
+        return self.title
 
     def __eq__(self, other):
         return isinstance(other, Vulnerability) and self.__attrs() == other.__attrs()
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def __hash__(self):
         return hash(self.__attrs())
+
 
 class VulnReporterInterface:
     """
@@ -204,6 +207,7 @@ def submitIssue(vulns, reporter):
 
     to_submit = new_vulns - old_vulns
 
+    print(to_submit)
     reporter.store_vulns(to_submit)
 
 
