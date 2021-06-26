@@ -16,11 +16,9 @@ of validating whether a branch in a pull request is introducing new vulnerabilit
 
 ### Installing the required dependencies
 
-There is an pip environment 'image-scan' that has all the dependencies. To install them you need to run
-the following:
+To install the dependencies you need to run the following:
 
 ```bash
-$ source ./image-scan/bin/activate
 $ pip install -r requirements.txt
 ```
 
