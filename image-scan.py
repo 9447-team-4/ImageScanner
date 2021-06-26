@@ -198,7 +198,7 @@ def submitIssue(vulns, reporter):
     """
         Send an api request to target to submit an issue for the vulnerability
 
-        :param vulns: a list of new vulnerabilities to submit as issues ()
+        :param vulns: a list of new vulnerabilities to submit as issues.
     """
 
     new_vulns = set(list(map(lambda x: Vulnerability(
@@ -207,7 +207,6 @@ def submitIssue(vulns, reporter):
 
     to_submit = new_vulns - old_vulns
 
-    print(to_submit)
     reporter.store_vulns(to_submit)
 
 
@@ -282,10 +281,12 @@ if __name__ == "__main__":
         help='The lowest severity you want to consider while comparing')
 
     parser_compare.add_argument(
-        '--branches',
-        nargs=2,
-        metavar=('TARGET', 'BASE'),
-        help='The branches you want to compare.')
+        'target_branch',
+        help='The target branch you want in to compare with.')
+
+    parser_compare.add_argument(
+        'base_branch',
+        help='The base branch you want to compare with.')
 
     parser.add_argument('repo', type=dir_path,
                         help='The path to the repo that contains a Dockerfile')
@@ -309,12 +310,11 @@ if __name__ == "__main__":
                   f'Found vulnerabilities: {json.dumps(vulns, indent=4)}' + bcolors.ENDC)
 
             submitIssue(vulns, generate_reporter(args.git_service))
-            exit(1)
 
     elif args.subcommand == 'compare':
-        result = compare(args.repo, severity, *args.branches)
+        target, base = args.target_branch, args.base_branch
+        result = compare(args.repo, severity, target, base)
         if result:
-            target, base = args.branches
             print(
                 bcolors.FAIL + f'Branch {base} is introducing new vulnerabilities to branch {target}!')
             print(f'Vulnerabilities found: {result}' + bcolors.ENDC)
