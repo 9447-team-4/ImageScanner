@@ -1,5 +1,4 @@
-FROM node:10.4.0
+FROM ubuntu:18.04
 
-RUN apt-get install -y imagemagick
 
 CMD [ "echo 'Hello World'" ]
