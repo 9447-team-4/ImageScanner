@@ -1,15 +1,25 @@
 #!/usr/bin/env python3
-
-import sys
-import os
 import argparse
 import json
 from git import Repo
-import gitea_auth as gitea
 from functools import reduce
-from typing import List, Dict
-from itertools import groupby
+from typing import List
 
+import os
+import giteapy
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Configure API key authorization: AccessToken
+configuration = giteapy.Configuration()
+configuration.api_key['access_token'] = os.getenv('GITEA_TOKEN')
+
+# Setting the client api with custom host to be the default api
+configuration.host = f"http://{os.getenv('GITEA_HOST')}:{os.getenv('GITEA_PORT')}/api/v1"
+api_client = giteapy.ApiClient(configuration=configuration)
+
+configuration = giteapy.Configuration()
 
 class bcolors:
     HEADER = '\033[95m'
@@ -70,7 +80,7 @@ class GiteaReporter(VulnReporterInterface):
 
     def __init__(self, api_client):
         self._api_client = api_client
-        self._issues_api = gitea.swagger_client.IssueApi(gitea.api_client)
+        self._issues_api = giteapy.IssueApi(gitea.api_client)
         self._owner = os.getenv('GITEA_USERNAME')
         self._repo = os.getenv('GITEA_REPO')
 
@@ -81,8 +91,7 @@ class GiteaReporter(VulnReporterInterface):
         """
 
         issues = self._issues_api.issue_list_issues(self._owner, self._repo)
-        labels = list(map(lambda x: self._issues_api.issue_get_labels(
-            self._owner, self._repo, x.id), issues))
+        labels = list(map(lambda x: x.labels, issues))
 
         # Filter issues which are not vulnerabilities
         severities = ['low vulnerability',
@@ -113,14 +122,14 @@ class GiteaReporter(VulnReporterInterface):
             label_id = self.label_exists(label_name)
 
             if not label_id:
-                label_opt = gitea.swagger_client.models.CreateLabelOption(
+                label_opt = giteapy.models.CreateLabelOption(
                     color=colors[v.severity], name=label_name)
 
                 label_id = self._issues_api.issue_create_label(
                     owner=self._owner, repo=self._repo, body=label_opt).id
 
             # Create issue for it
-            cio = gitea.swagger_client.models.CreateIssueOption(
+            cio = giteapy.models.CreateIssueOption(
                 body=json.dumps(v.references, indent=1), title=v.title, labels=[label_id])
 
             self._issues_api.issue_create_issue(
@@ -310,6 +319,7 @@ if __name__ == "__main__":
                   f'Found vulnerabilities: {json.dumps(vulns, indent=4)}' + bcolors.ENDC)
 
             submitIssue(vulns, generate_reporter(args.git_service))
+            exit(1)
 
     elif args.subcommand == 'compare':
         target, base = args.target_branch, args.base_branch

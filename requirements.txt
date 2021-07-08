@@ -10,7 +10,6 @@ lazy-object-proxy==1.6.0
 mccabe==0.6.1
 parse==1.19.0
 pycodestyle==2.7.0
-pygitea==0.0
 pylint==2.8.3
 python-dateutil==2.8.1
 python-dotenv==0.18.0
@@ -22,3 +21,5 @@ typed-ast==1.4.3
 typing-extensions==3.10.0.0
 urllib3==1.26.5
 wrapt==1.12.1
+
+giteapy~=1.0.8
