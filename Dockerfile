@@ -1,5 +1,9 @@
-FROM node:10.4.0
+FROM python:3
 
-RUN apt-get install -y imagemagick
+COPY . /app
 
-CMD [ "echo 'Hello World'" ]
+RUN pip install -r /app/requirements.txt 
+
+RUN cp /app/image-scan.py /bin/image-scan
+
+ENTRYPOINT [ "image-scan" ]
