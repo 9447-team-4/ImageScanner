@@ -73,14 +73,14 @@ class VulnReporterInterface:
 
 def generate_reporter(git_service) -> VulnReporterInterface:
     if git_service == 'gitea':
-        return GiteaReporter(giteapy.api_client)
+        return GiteaReporter(api_client)
 
 
 class GiteaReporter(VulnReporterInterface):
 
     def __init__(self, api_client):
         self._api_client = api_client
-        self._issues_api = giteapy.IssueApi(giteapy.api_client)
+        self._issues_api = giteapy.IssueApi(api_client)
         self._owner = os.getenv('GITEA_USERNAME')
         self._repo = os.getenv('GITEA_REPO')
 
