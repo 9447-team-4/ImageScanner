@@ -49,11 +49,3 @@ class ZAPPRReporter(PullRequestReporter):
     def process_pull_review(self):
         msg = self.create_message()
         self.pull_review.body = msg
-
-
-giteatest = GiteaService(os.getenv('GITEA_REPO'), os.getenv('GITEA_USERNAME'), os.getenv('GITEA_TOKEN'),
-                         os.getenv('GITEA_HOST'), os.getenv('GITEA_PORT'))
-
-zap = ZAPPRReporter(giteatest, 1)
-zap.process_pull_review()
-zap.commit_review()
