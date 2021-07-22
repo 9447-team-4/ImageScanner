@@ -16,7 +16,7 @@ class ZAPPRReporter(PullRequestReporter):
         report_url = self._s3_client.generate_presigned_url(
             'get_object',
             Params={'Bucket': self._bucket_name, 'Key': 'report.html'},
-            ExpiresIn=1800)
+            ExpiresIn=86400)
 
         return report_url
 
