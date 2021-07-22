@@ -1,10 +1,7 @@
-from Reporters import *
+from Reporters import PullRequestReporter
 import boto3
 import os
 import json
-from dotenv import load_dotenv
-
-load_dotenv()
 
 
 class ZAPPRReporter(PullRequestReporter):
@@ -19,7 +16,7 @@ class ZAPPRReporter(PullRequestReporter):
         report_url = self._s3_client.generate_presigned_url(
             'get_object',
             Params={'Bucket': self._bucket_name, 'Key': 'report.html'},
-            ExpiresIn=300)
+            ExpiresIn=1800)
 
         return report_url
 
