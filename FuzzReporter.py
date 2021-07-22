@@ -15,7 +15,7 @@ class ZAPPRReporter(PullRequestReporter):
         self._s3_client = boto3.client('s3')
         self._s3_bucket = boto3.resource('s3')
 
-    def get_report(self):
+    def _get_report(self):
         report_url = self._s3_client.generate_presigned_url(
             'get_object',
             Params={'Bucket': self._bucket_name, 'Key': 'report.html'},
@@ -23,7 +23,7 @@ class ZAPPRReporter(PullRequestReporter):
 
         return report_url
 
-    def get_metrics(self):
+    def _get_metrics(self):
         obj = self._s3_bucket.Object('soteriafuzzreport', 'report.json')
         json_obj = json.loads(obj.get()['Body'].read().decode('utf-8'))
         alerts = {'0': 0, '1': 0, '2': 0, '3': 0}
@@ -34,7 +34,7 @@ class ZAPPRReporter(PullRequestReporter):
 
         return alerts
 
-    def create_message(self):
+    def _create_message(self):
         alerts = self.get_metrics()
         msg = "--- OWASP ZAP fuzzing results ---\n" \
               "High: {}\n" \
