@@ -38,10 +38,6 @@ class PullReview:
             json.dumps(self, default=lambda o: getattr(o, '__dict__', str(o)))
         )
 
-    # @property
-    # def __str__(self):
-    #     return json.dumps(self.to_dict())
-
 
 class Label:
 
@@ -147,7 +143,7 @@ class Issue:
         issue_dict = self.to_dict()
         # Sort the array objects
         issue_dict['_labels'].sort(key=lambda k: (k['_name'], k['_color']))
-        other_dict = self.to_dict()
+        other_dict = other.to_dict()
         # Sort the array objects
         other_dict['_labels'].sort(key=lambda k: (k['_name'], k['_color']))
         return issue_dict == other_dict
@@ -316,7 +312,7 @@ class IssueReporter:
         """
         pass
 
-    def report_issues(self):
+    def commit_issues(self):
         """
         Report issues to the Git service
         """
