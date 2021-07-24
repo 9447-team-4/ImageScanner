@@ -1,7 +1,7 @@
 import argparse
 from Reporters import GiteaService
 from StaticPRReporter import SonarPRReporter
-from FuzzReporter import ZAPPRReporter
+from DynamicPRReporter import ZAPPRReporter
 import os
 from dotenv import load_dotenv
 
