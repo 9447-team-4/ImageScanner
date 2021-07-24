@@ -1,4 +1,4 @@
-from Reporters import PullRequestReporter
+from Reporters import GitService, PullRequestReporter
 import boto3
 import os
 import json
@@ -32,17 +32,17 @@ class ZAPPRReporter(PullRequestReporter):
         return alerts
 
     def _create_message(self):
-        alerts = self.get_metrics()
+        alerts = self._get_metrics()
         msg = "--- OWASP ZAP fuzzing results ---\n" \
               "High: {}\n" \
               "Medium: {}\n" \
               "Low: {}\n" \
               "Informational: {}\n\n".format(alerts['3'], alerts['2'], alerts['1'], alerts['0'])
-        report_url = self.get_report()
+        report_url = self._get_report()
         msg += f"View more results: {report_url}"
 
         return msg
 
     def process_pull_review(self):
-        msg = self.create_message()
+        msg = self._create_message()
         self.pull_review.body = msg
