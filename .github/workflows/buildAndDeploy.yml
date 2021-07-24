@@ -27,7 +27,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: soterias/image-scan:latest
+          tags: soterias/gitea-reporter:latest
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
