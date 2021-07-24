@@ -1,4 +1,4 @@
-from Reporters import *
+from Reporters import GitService, PullRequestReporter
 import boto3
 import os
 import json

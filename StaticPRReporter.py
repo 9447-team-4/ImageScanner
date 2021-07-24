@@ -1,6 +1,6 @@
 import os
 from sonarqube import SonarQubeClient
-from Reporters import *
+from Reporters import GitService, PullRequestReporter
 
 
 class SonarPRReporter(PullRequestReporter):

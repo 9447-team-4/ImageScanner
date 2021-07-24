@@ -1,5 +1,5 @@
 import argparse
-from Reporters import *
+from Reporters import GiteaService
 from StaticPRReporter import SonarPRReporter
 from FuzzReporter import ZAPPRReporter
 import os
