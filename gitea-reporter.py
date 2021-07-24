@@ -31,6 +31,7 @@ if __name__ == "__main__":
         gitea = GiteaService(os.getenv('GITEA_REPO'), os.getenv('GITEA_USERNAME'), os.getenv('GITEA_TOKEN'),
                              os.getenv('GITEA_HOST'), os.getenv('GITEA_PORT'))
         if args.tool == "image-scan":
+            # TODO
             # call image scan
             pass
         elif args.tool == "static":
@@ -42,4 +43,6 @@ if __name__ == "__main__":
             zap.process_pull_review()
             zap.commit_review()
     elif args.type == 'main':
+        # TODO
+        # Scan branch or image against main
         pass
