@@ -1,7 +1,10 @@
+#!/usr/bin/env python
+
 import argparse
 from Reporters import GiteaService
 from StaticPRReporter import SonarPRReporter
 from DynamicPRReporter import ZAPPRReporter
+from ImageReporters import ImagePRReporter, ImageIssueReporter, Severity
 import os
 from dotenv import load_dotenv
 
@@ -10,39 +13,63 @@ load_dotenv()
 if __name__ == "__main__":
     parser = argparse.ArgumentParser('gitea-reporter')
     subparsers = parser.add_subparsers(dest='type')
-    parser_pr = subparsers.add_parser('pr', help="Report pull request results")
+    subparsers.required = True
 
-    subparsers_pr = parser_pr.add_subparsers(dest ='tool', help='The tool to report')
-    parser_image = subparsers_pr.add_parser('image-scan')
-    parser_image.add_argument('branch-image', help='The branch or image to compare against')
+    parser_pr = subparsers.add_parser('pr', help="Report results via pull request review")
+
+    subparsers_pr = parser_pr.add_subparsers(dest='stage', help='The pipeline stage to report')
+    subparsers_pr.required = True
+
     parser_static = subparsers_pr.add_parser('static')
+    parser_pr_image = subparsers_pr.add_parser('image-scan')
     parser_dynamic = subparsers_pr.add_parser('dynamic')
-    parser_image.add_argument('pr_id', help='The pull request id number')
-    parser_static.add_argument('pr_id', help='The pull request id number')
-    parser_dynamic.add_argument('pr_id', help='The pull request id number')
 
-    parser_main = subparsers.add_parser('main', help="Scan a main branch's Dockerfile for vulnerabilities")
-    parser_main.add_argument('image-scan', help="Image scan tool to use")
-    parser_main.add_argument('branch-image', help='The branch or image you want to scan')
+    parser_pr_image.add_argument('base', help='The image that is initiated from the PR (feature branch)')
+    parser_pr_image.add_argument('target', help='The image that currently exists in the target branch (main '
+                                                'branch)')
+    parser_pr_image.add_argument('--severity-threshold', nargs=1, default='low',
+                                 choices=['low', 'medium', 'high', 'critical'])
+    parser_pr_image.add_argument('pr_id', help='The pull request id number')
+
+    parser_dynamic.add_argument('pr_id', help='The pull request id number')
+    parser_static.add_argument('pr_id', help='The pull request id number')
+
+    parser_issue = subparsers.add_parser('issue', help="Report pipeline stage via issues.")
+
+    subparsers_issue = parser_issue.add_subparsers(dest='stage', help='Stage of pipeline to report as issues')
+    subparsers_issue.required = True
+    parser_issue_image = subparsers_issue.add_parser('image-scan')
+
+    parser_issue_image.add_argument('image', help='The image that needs to be scanned.')
+    parser_issue_image.add_argument('--severity-threshold', nargs=1, default='low',
+                                    choices=['low', 'medium', 'high', 'critical'])
 
     args = parser.parse_args()
 
+    gitea = GiteaService(os.getenv('GITEA_REPO'), os.getenv('GITEA_USERNAME'), os.getenv('GITEA_TOKEN'),
+                         os.getenv('GITEA_HOST'), os.getenv('GITEA_PORT'))
+
     if args.type == 'pr':
-        gitea = GiteaService(os.getenv('GITEA_REPO'), os.getenv('GITEA_USERNAME'), os.getenv('GITEA_TOKEN'),
-                             os.getenv('GITEA_HOST'), os.getenv('GITEA_PORT'))
-        if args.tool == "image-scan":
-            # TODO
-            # call image scan
-            pass
-        elif args.tool == "static":
-            sonar = SonarPRReporter(gitea, args.pr_id)
-            sonar.process_pull_review()
-            sonar.commit_review()
-        elif args.tool == "dynamic":
-            zap = ZAPPRReporter(gitea, args.pr_id)
-            zap.process_pull_review()
-            zap.commit_review()
-    elif args.type == 'main':
-        # TODO
-        # Scan branch or image against main
-        pass
+
+        pr_reporter = None
+        if args.stage == "image-scan":
+            pr_reporter = ImagePRReporter(gitea, args.pr_id, os.getenv('SNYK_TOKEN'), args.base, \
+                                          args.target, Severity[args.severity_threshold])
+
+        elif args.stage == "static":
+            pr_reporter = SonarPRReporter(gitea, args.pr_id)
+        elif args.stage == "dynamic":
+            pr_reporter = ZAPPRReporter(gitea, args.pr_id)
+
+        pr_reporter.process_pull_review()
+        pr_reporter.commit_review()
+
+        if isinstance(pr_reporter, ImagePRReporter):
+            exit(pr_reporter.exit_status)
+
+    elif args.type == 'issue':
+        issue_reporter = ImageIssueReporter(gitea, os.getenv('SNYK_TOKEN'), args.image, \
+                                            Severity[args.severity_threshold])
+
+        issue_reporter.process_issues()
+        issue_reporter.commit_issues()

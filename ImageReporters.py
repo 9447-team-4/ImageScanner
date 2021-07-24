@@ -205,12 +205,15 @@ def scan(image_tag: str, snyk_token: str, severity: Severity) -> List[Vulnerabil
     @param severity: severity threshold
     @return: a list of vulnerabilities
     """
-    os.system(f'snyk config set api={snyk_token} >> /dev/null')
+    os.system(f'snyk config set api={snyk_token}')
 
     p = subprocess.Popen(f'snyk container test {image_tag} --severity-threshold={severity.name} --json', \
                          shell=True, stdout=subprocess.PIPE)
     stdout, _ = p.communicate()
+
     vulns_dict = json.loads(stdout)
+    if p.returncode == 2 or p.returncode == 3:
+        raise Exception(f'snyk: Could not scan {image_tag}; e.what(): {vulns_dict["error"]}')
 
     return list(map(lambda v: Vulnerability.from_dict(parse_vuln(v)), vulns_dict['vulnerabilities']))
 

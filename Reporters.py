@@ -318,7 +318,7 @@ class IssueReporter:
         """
 
         if len(self._issues) == 0:
-            raise Exception('Cannot report empty list of issues')
+            return
 
         self._git_service.add_issues(self._issues)
 
