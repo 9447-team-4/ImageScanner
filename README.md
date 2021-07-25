@@ -13,6 +13,12 @@ This tool provides a method for tools within the pipeline to report back to the 
 
 ### Installing the required dependencies
 
+Begin by first cloning the repository:
+
+```bash
+$ git clone https://github.com/9447-team-4/ImageScanner.git
+```
+
 To install the dependencies, you need to run the following:
 
 ```bash
@@ -45,7 +51,7 @@ To report to a specific pull request with the results of a tool:
 
 ```bash
 # Pull request reporter (static/dynamic)
-$ ./gitea-reporter.py pr {static,image-scan,dynamic} pr_id
+$ ./gitea-reporter.py pr {static,dynamic} pr_id
 
 # Example
 $ ./gitea-reporter.py pr static 1 # This will comment the results of static analysis on pull request id 1
@@ -64,4 +70,15 @@ $ ./gitea-reporter.py issue image-scan [--severity-threshold {low,medium,high,cr
 $ ./gitea-reporter.py issue image-scan --severity-threshold=critical image # This will create an issue detailing the issues of critical severity
 ```
 
-:)
+### Alternative method: Installing and Running the program
+
+Soterias gitea reporter is also available as a Docker image and can be used as follows:
+
+```bash
+docker run --env-file {path-to-env-file} soterias/gitea-reporter {arguments}
+```
+
+Where the env file will contain all the required variables as specified above.
+Refer to Running the program section for list of arguments to provide.
+
+:) :D
