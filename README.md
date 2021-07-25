@@ -10,6 +10,8 @@ This tool provides a method for tools within the pipeline to report back to the 
 
 - python v3.7 or higher
 - pip
+- Snyk CLI
+	- Instructions guide: https://support.snyk.io/hc/en-us/articles/360003812538-Install-the-Snyk-CLI
 
 ### Installing the required dependencies
 
