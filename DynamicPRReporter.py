@@ -33,13 +33,16 @@ class ZAPPRReporter(PullRequestReporter):
 
     def _create_message(self):
         alerts = self._get_metrics()
-        msg = "--- OWASP ZAP fuzzing results ---\n" \
-              "High: {}\n" \
-              "Medium: {}\n" \
-              "Low: {}\n" \
-              "Informational: {}\n\n".format(alerts['3'], alerts['2'], alerts['1'], alerts['0'])
+        msg = "# OWASP ZAP Fuzzing Results\n" \
+              "| Risk Level     | Amount of Vulnerabilities |\n" \
+              "| -------------- | ------------------------- |\n" \
+             f"| High           | {alerts['3']}             |\n" \
+             f"| Medium         | {alerts['2']}             |\n" \
+             f"| Low            | {alerts['1']}             |\n" \
+             f"| Informational  | {alerts['0']}             |\n\n"
+
         report_url = self._get_report()
-        msg += f"View more results: {report_url}"
+        msg += f"View more results:\n{report_url}"
 
         return msg
 
