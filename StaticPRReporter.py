@@ -36,7 +36,7 @@ class SonarPRReporter(PullRequestReporter):
         msg = ""
         quality_gate = self._sonar.qualitygates.get_project_qualitygates_status(projectKey=self._sonar_key)
         msg += f"Project state: {quality_gate['projectStatus']['status']}\n"
-        if quality_gate['projectStatus']['status'] == "Error":
+        if quality_gate['projectStatus']['status'] == "ERROR":
             self._exit_status = 1
         component = self._sonar.measures.get_component_with_specified_measures(component=project_data['key'],
                                                                                fields="metrics, periods",
