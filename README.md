@@ -45,6 +45,49 @@ SNYK_TOKEN=YOUR-SNYK-TOKEN
 
 an example .env.example is provided in the repo as well.
 
+---
+
+### Setting up S3 bucket with AWS
+
+Log into your IAM Console on AWS, then navigate
+
+`Account name @ ID > My Security Credentials > Access keys for CLI, SDK, & API access > Create access key`
+
+With the access ID and generated secret access key, enter the credentials in the following files
+
+Create a file `~/.aws/credentials` with
+
+```
+[default]
+aws_access_key_id = YOUR_ACCESS_KEY
+aws_secret_access_key = YOUR_SECRET_KEY
+```
+
+Create a file `~/.aws/config` with
+
+```
+[default]
+region=YOUR_REGION
+```
+
+Alternatively, you can change these files through the AWS CLI
+
+To install the CLI, run the commands
+
+```
+$ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+```
+
+Then configure files by using
+
+```
+aws configure
+```
+
+---
+
 ### Running the program
 
 This tool provides 2 functionalities one dealing with pull requests and one dealing with the issues.
