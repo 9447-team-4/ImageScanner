@@ -7,12 +7,17 @@ class SonarPRReporter(PullRequestReporter):
 
     def __init__(self, git_service: GitService, pr_id: int):
         super(SonarPRReporter, self).__init__(git_service, pr_id)
+        self._exit_status = 0
         self._sonar_url = os.getenv('SONAR_URL')
         self._sonar_login = os.getenv('SONAR_LOGIN')
         self._sonar_password = os.getenv('SONAR_PASSWORD')
         self._sonar_key = os.getenv('SONAR_KEY')
         self._sonar = SonarQubeClient(sonarqube_url=self._sonar_url, username=self._sonar_login,
                                       password=self._sonar_password)
+
+    @property
+    def exit_status(self):
+        return self._exit_status
 
     def _check_files(self):
         if not os.path.exists('sonar-project.properties'):
@@ -31,6 +36,8 @@ class SonarPRReporter(PullRequestReporter):
         msg = ""
         quality_gate = self._sonar.qualitygates.get_project_qualitygates_status(projectKey=self._sonar_key)
         msg += f"Project state: {quality_gate['projectStatus']['status']}\n"
+        if quality_gate['projectStatus']['status'] == "Error":
+            self._exit_status = 1
         component = self._sonar.measures.get_component_with_specified_measures(component=project_data['key'],
                                                                                fields="metrics, periods",
                                                                                metricKeys="code_smells, bugs, "
