@@ -64,7 +64,7 @@ if __name__ == "__main__":
         pr_reporter.process_pull_review()
         pr_reporter.commit_review()
 
-        if isinstance(pr_reporter, ImagePRReporter):
+        if isinstance(pr_reporter, ImagePRReporter) or isinstance(pr_reporter, SonarPRReporter):
             exit(pr_reporter.exit_status)
 
     elif args.type == 'issue':
