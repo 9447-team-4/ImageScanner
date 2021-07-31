@@ -43,16 +43,18 @@ class SonarPRReporter(PullRequestReporter):
                                                                                metricKeys="code_smells, bugs, "
                                                                                           "vulnerabilities")
         project = {'name': component['component']['name']}
+        msg += "| Risk Level\t\t | Amount of Vulnerabilities |\n" \
+               "| -------------- | ------------------------- |\n"
         for measure in component['component']['measures']:
             project[measure['metric']] = measure['value']
-            msg += f"\t{measure['metric']}: {project[measure['metric']]}\n"
+            msg += f"| {measure['metric'].capitalize()}\t\t | {project[measure['metric']]} |\n"
         return msg
 
     def _create_message(self):
-        msg = "Current project SonarQube scan results\n"
+        msg = "# SonarQube Results\n"
         msg += self._get_sonar_metrics()
         url = f"{self._sonar_url}/dashboard?id={self._sonar_key}"
-        msg += f"View more details on: {url}\n"
+        msg += f"\nView more details on: {url}\n"
         return msg
 
     def process_pull_review(self):
