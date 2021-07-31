@@ -290,7 +290,7 @@ class ImagePRReporter(PullRequestReporter):
 
         new_vulns = set(base_vulns) - set(target_vulns)
 
-        result = 'No New Vulnerabilities.'
+        result = 'No New Vulnerabilities.\n'
         if len(new_vulns) > 0:
             result = '# Found Image Vulnerabilities: \n'
             self._exit_status = 1
@@ -312,9 +312,11 @@ class ImagePRReporter(PullRequestReporter):
         self._new_vulnerabilites = list(new_vulns)
 
         if severities_count:
-            result += '## Statistics:\n'
-        for severity, count in severities_count.items():
-            result += f'#### number of **{severity}** vulnerabilities: {count}\n'
+            result += "# Statistics\n" \
+                     "| Risk Level\t\t | Amount of Vulnerabilities |\n" \
+                     "| -------------- | ------------------------- |\n"
+            for severity, count in sorted(severities_count.items()):
+                result += f"| {severity}\t\t | {count}                    |\n" \
 
-        result += '---------------------------------------------------------------------------\n'
+        result += '\n---------------------------------------------------------------------------\n'
         self.pull_review.body = result
