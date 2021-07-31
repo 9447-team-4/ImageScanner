@@ -290,7 +290,7 @@ class ImagePRReporter(PullRequestReporter):
 
         new_vulns = set(base_vulns) - set(target_vulns)
 
-        result = 'No New Vulnerabilities.'
+        result = 'No New Vulnerabilities.\n'
         if len(new_vulns) > 0:
             result = '# Found Image Vulnerabilities: \n'
             self._exit_status = 1
