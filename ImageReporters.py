@@ -312,9 +312,11 @@ class ImagePRReporter(PullRequestReporter):
         self._new_vulnerabilites = list(new_vulns)
 
         if severities_count:
-            result += '## Statistics:\n'
-        for severity, count in severities_count.items():
-            result += f'#### number of **{severity}** vulnerabilities: {count}\n'
+            result += "# Statistics\n" \
+                     "| Risk Level\t\t | Amount of Vulnerabilities |\n" \
+                     "| -------------- | ------------------------- |\n"
+            for severity, count in sorted(severities_count.items()):
+                result += f"| {severity}\t\t | {count}                    |\n" \
 
-        result += '---------------------------------------------------------------------------\n'
+        result += '\n---------------------------------------------------------------------------\n'
         self.pull_review.body = result
