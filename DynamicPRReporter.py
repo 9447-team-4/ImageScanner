@@ -21,7 +21,7 @@ class ZAPPRReporter(PullRequestReporter):
         return report_url
 
     def _get_metrics(self):
-        obj = self._s3_bucket.Object('soteriafuzzreport', 'report.json')
+        obj = self._s3_bucket.Object(self._bucket_name, 'report.json')
         json_obj = json.loads(obj.get()['Body'].read().decode('utf-8'))
         alerts = {'0': 0, '1': 0, '2': 0, '3': 0}
 
