@@ -8,9 +8,14 @@ class ZAPPRReporter(PullRequestReporter):
 
     def __init__(self, git_service: GitService, pr_id: int):
         super(ZAPPRReporter, self).__init__(git_service, pr_id)
+        self._exit_status = 0
         self._bucket_name = os.getenv('S3_BUCKET_NAME')
         self._s3_client = boto3.client('s3')
         self._s3_bucket = boto3.resource('s3')
+
+    @property
+    def exit_status(self):
+        return self._exit_status
 
     def _get_report(self):
         report_url = self._s3_client.generate_presigned_url(
@@ -28,6 +33,10 @@ class ZAPPRReporter(PullRequestReporter):
         for site in json_obj['site']:
             for alert in site['alerts']:
                 alerts[alert['riskcode']] += 1
+
+        # If high risk vuln > 0
+        if alerts['3'] > 0:
+            self._exit_status = 1
 
         return alerts
 
